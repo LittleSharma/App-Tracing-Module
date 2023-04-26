@@ -75,11 +75,6 @@ object Utilities {
 
         for (i in 0..stats.size - 1) {
 
-//            appTraceDataDaoObj.appNameDao = getAppNameFromPkgName(context, stats[i].packageName)
-//            appTraceDataDaoObj.appIconDao = getAppIconFromPkgName(context,stats[i].packageName)
-//            appTraceDataDaoObj.totalTimeInForegroundDao = convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS)
-//            appTraceDataDaoObj.currentTimeStampDao = getCurrentDate().toString()
-
             stats_data = stats_data + "Package Name : " + stats[i].packageName +
                     "\n" + "App Name : " + getAppNameFromPkgName(context, stats[i].packageName) +
                     "\n" + "App Icon : " + getAppIconFromPkgName(context, stats[i].packageName) +
