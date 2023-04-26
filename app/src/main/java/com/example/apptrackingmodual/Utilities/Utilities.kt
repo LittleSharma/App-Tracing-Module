@@ -65,20 +65,12 @@ object Utilities {
         val stats: List<UsageStats> =
             usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, start, end)
 
-//        var stats_datarrr: ArrayList<AppTraceDataDao> = ArrayList()
-//        val obj =AppTraceDataDao()
-//        obj.appNameDao=stats.get(0).packageName
         var stats_data: String = ""
 //        val appTraceDataDaoObj = AppTraceDataDao()
 
 
 
         for (i in 0..stats.size - 1) {
-
-//            appTraceDataDaoObj.appNameDao = getAppNameFromPkgName(context, stats[i].packageName)
-//            appTraceDataDaoObj.appIconDao = getAppIconFromPkgName(context,stats[i].packageName)
-//            appTraceDataDaoObj.totalTimeInForegroundDao = convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS)
-//            appTraceDataDaoObj.currentTimeStampDao = getCurrentDate().toString()
 
             stats_data = stats_data + "Package Name : " + stats[i].packageName +
                     "\n" + "App Name : " + getAppNameFromPkgName(context, stats[i].packageName) +
