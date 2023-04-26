@@ -65,9 +65,6 @@ object Utilities {
         val stats: List<UsageStats> =
             usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, start, end)
 
-//        var stats_datarrr: ArrayList<AppTraceDataDao> = ArrayList()
-//        val obj =AppTraceDataDao()
-//        obj.appNameDao=stats.get(0).packageName
         var stats_data: String = ""
 //        val appTraceDataDaoObj = AppTraceDataDao()
 
