@@ -16,6 +16,7 @@ object Constants {
 
     // Date & Time for Usage Stats Manager
 
+    const val YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss"
     const val YYYY_MM_DD = "yyyy-MM-dd"
     const val HH_MM_SS = "hh:mm:ss"
 
@@ -29,5 +30,10 @@ object Constants {
     const val KEY_MOBILE_NUMBER = "mobile_no"
     const val KEY_PASSWORD = "password"
     const val KEY_DEVICE_ID = "device_id"
+    const val FLAG_VALUE = "flag_value"
+    const val CURRENT_TIME = "current_time"
+    const val SYNC_DATA_STATUS = "sync_data_status"
+    const val LOG_IN_TIME = "sync_data_status"
+    const val LOG_OUT_TIME = "sync_data_status"
 
 }

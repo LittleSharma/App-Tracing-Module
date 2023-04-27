@@ -2,20 +2,20 @@ package com.example.apptrackingmodual.Utilities
 
 import android.annotation.SuppressLint
 import android.app.AppOpsManager
+import android.app.Dialog
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Process
 import android.provider.Settings
 import android.util.Log
+import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
@@ -23,8 +23,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.apptrackingmodual.Adapters.CustomAdapter
 import com.example.apptrackingmodual.AppTrace.AppTraceDataDao
-import java.io.ByteArrayOutputStream
+import com.example.apptrackingmodual.R
 import java.text.DateFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,7 +34,11 @@ object Utilities {
 
     val TAG = "Check_Permission"
     val TAG1 = "Check_Data"
+
+    @SuppressLint("StaticFieldLeak")
     lateinit var customAdapter: CustomAdapter
+    lateinit var dialog: Dialog
+    lateinit var arrayUsageData : ArrayList<AppTraceDataDao>
 
     fun setUpPermissionUsageStats(context: Context) {
 
@@ -66,21 +71,42 @@ object Utilities {
             usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, start, end)
 
         var stats_data: String = ""
-//        val appTraceDataDaoObj = AppTraceDataDao()
 
+        Log.d(
+            "Your_Start_Time",
+            convertLocalMillisecToUTCFormat(start, Constants.YYYY_MM_DD_HH_MM_SS)!!
+        )
+        Log.d(
+            "Your_End_Time",
+            convertLocalMillisecToUTCFormat(start, Constants.YYYY_MM_DD_HH_MM_SS)!!
+        )
 
 
         for (i in 0..stats.size - 1) {
+
+//            if (convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS) != "12:00:00") {
+//                arrayUsageList = ArrayList()
+//                arrayUsageList[i].appNameDao= getAppNameFromPkgName(context, stats[i].packageName)
+//                arrayUsageList[i].appIconDao = getAppIconFromPkgName(context, stats[i].packageName)
+//                arrayUsageList[i].totalTimeInForegroundDao = convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS)
+//                arrayUsageList[i].currentTimeStampDao = getCurrentDate().toString()
+//                Log.d("Your_App_Name", arrayUsageList[i].appNameDao)
+//                Log.d("Your_App_Icon", arrayUsageList[i].appNameDao)
+//                Log.d("Your_App_Total_Foreground_Time", arrayUsageList[i].appNameDao)
+//                }
+//            else {
+//                Log.d("12:00:00 = ","12:00:00")
+//            }
 
             stats_data = stats_data + "Package Name : " + stats[i].packageName +
                     "\n" + "App Name : " + getAppNameFromPkgName(context, stats[i].packageName) +
                     "\n" + "App Icon : " + getAppIconFromPkgName(context, stats[i].packageName) +
                     "\n" + "Last Time Used : " + convertMilliSecondsToDateFormatUTC(
-                context, stats[i].lastTimeUsed, Constants.YYYY_MM_DD
+                context, stats[i].lastTimeUsed, Constants.YYYY_MM_DD_HH_MM_SS
             ) + "\n" + "Describe Contents : " + stats[i].describeContents() + "\n" + "First Time Stamp : " + convertMilliSecondsToDateFormatUTC(
-                context, stats[i].firstTimeStamp, Constants.YYYY_MM_DD
+                context, stats[i].firstTimeStamp, Constants.YYYY_MM_DD_HH_MM_SS
             ) + "\n" + "Last Time Stamp : " + convertMilliSecondsToDateFormatUTC(
-                context, stats[i].lastTimeStamp, Constants.YYYY_MM_DD
+                context, stats[i].lastTimeStamp, Constants.YYYY_MM_DD_HH_MM_SS
             ) + "\n" +
                     "Total Time in Foreground: " + convertMilliSecondsToDateFormatUTC(
                 context,
@@ -90,21 +116,14 @@ object Utilities {
 
         }
 
-//        Log.d("Your_Class_Data_1", appTraceDataDaoObj.appIconDao.toString())
 
         tvUsageStats.layoutManager = LinearLayoutManager(context)
-        customAdapter = CustomAdapter(stats,context)
+        customAdapter = CustomAdapter(stats, context)
         tvUsageStats.adapter = customAdapter
 
-        Log.d(TAG1, stats_data.toString())
-
+        Log.d(TAG1, stats_data)
         Log.d(TAG1, stats.toString())
         Log.d(TAG1, stats.size.toString())
-        Log.d(TAG1, stats[0].packageName)
-        Log.d(TAG1, stats[0].firstTimeStamp.toString())
-        Log.d(TAG1, stats[0].lastTimeStamp.toString())
-        Log.d(TAG1, stats[0].lastTimeUsed.toString())
-        Log.d(TAG1, stats[0].totalTimeInForeground.toString())
 
     }
 
@@ -188,5 +207,52 @@ object Utilities {
         deviceID = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
         return deviceID
     }
+
+    @SuppressLint("SimpleDateFormat")
+    @Throws(ParseException::class)
+    fun getCurrentUtcTime(): String? {
+        val df: DateFormat = SimpleDateFormat("hh:mm a")
+        df.timeZone = TimeZone.getTimeZone("UTC")
+        val gmtTime = df.format(Date())
+        val cal = Calendar.getInstance()
+        cal.time = df.parse(gmtTime)!! // all done
+        cal.add(Calendar.MINUTE, 330)
+        return df.format(cal.time)
+    }
+
+    fun convertLocalMillisecToUTCFormat(time: Long, format: String?): String? {
+        var date = ""
+        try {
+            val sdf = SimpleDateFormat(format)
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            date = sdf.format(Date(time))
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return date
+    }
+
+    // Using Progress Bar Show
+
+    fun show(context: Context) {
+        dialog = Dialog(context)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.progressbar)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+    }
+
+    // Using Progress Bar Dismiss
+
+    fun dismiss() {
+        if (dialog.isShowing)
+            dialog.dismiss()
+    }
+
+    fun resetForegroundTime() {
+
+    }
+
 
 }
