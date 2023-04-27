@@ -1,21 +1,30 @@
 package com.example.apptrackingmodual.Service
 
 import android.app.*
-import android.app.usage.UsageStatsManager
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.apptrackingmodual.MainActivity
 import com.example.apptrackingmodual.R
+import com.example.apptrackingmodual.SharedPreference.AppTracePreference
 import com.example.apptrackingmodual.Utilities.Constants
 import com.example.apptrackingmodual.Utilities.Utilities
+import java.lang.String
+import java.text.ParseException
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
+import kotlin.Exception
+import kotlin.Int
+import kotlin.Throws
+import kotlin.toString
 
 
 class AppTrackingService : Service() {
+
+    private var timer: ScheduledExecutorService? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -56,7 +65,5 @@ class AppTrackingService : Service() {
             .build()
         startForeground(20, notification)
     }
-
-
 
 }
