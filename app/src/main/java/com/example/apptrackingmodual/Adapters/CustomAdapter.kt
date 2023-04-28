@@ -14,7 +14,7 @@ import com.example.apptrackingmodual.Utilities.Constants
 import com.example.apptrackingmodual.Utilities.Utilities
 
 class CustomAdapter(
-    private val mList: List<UsageStats>,
+    private val mList: ArrayList<AppTraceDataDao>,
     private val context: Context
 ) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
@@ -44,12 +44,12 @@ class CustomAdapter(
         var appTotalTimeInForeground: TextView = view.findViewById(R.id.app_total_time_in_foreground)
         var appCurrentTimeStamp: TextView = view.findViewById(R.id.app_current_time_stamp)
 
-        fun bindView(mList: UsageStats, context: Context) {
+        fun bindView(mList: AppTraceDataDao, context: Context) {
 
-            yourAppName.text = Utilities.getAppNameFromPkgName(context, mList.packageName)
-            appTotalTimeInForeground.text = Utilities.convertMilliSecondsToDateFormatUTC(context,mList.totalTimeInForeground,Constants.HH_MM_SS)
-            yourAppIcon.setImageDrawable(Utilities.getAppIconFromPkgName(context,mList.packageName))
-            appCurrentTimeStamp.text = Utilities.getCurrentDate()
+            yourAppName.text = mList.appNameDao
+            appTotalTimeInForeground.text = mList.totalTimeInForegroundDao
+            yourAppIcon.setImageDrawable(mList.appIconDao)
+            appCurrentTimeStamp.text = mList.currentTimeStampDao
 
         }
 

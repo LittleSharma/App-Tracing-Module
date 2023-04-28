@@ -38,7 +38,6 @@ object Utilities {
     @SuppressLint("StaticFieldLeak")
     lateinit var customAdapter: CustomAdapter
     lateinit var dialog: Dialog
-    lateinit var arrayUsageData : ArrayList<AppTraceDataDao>
 
     fun setUpPermissionUsageStats(context: Context) {
 
@@ -71,6 +70,7 @@ object Utilities {
             usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, start, end)
 
         var stats_data: String = ""
+        val arrayUsageList = ArrayList<AppTraceDataDao>()
 
         Log.d(
             "Your_Start_Time",
@@ -81,22 +81,13 @@ object Utilities {
             convertLocalMillisecToUTCFormat(start, Constants.YYYY_MM_DD_HH_MM_SS)!!
         )
 
-
         for (i in 0..stats.size - 1) {
 
-//            if (convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS) != "12:00:00") {
-//                arrayUsageList = ArrayList()
-//                arrayUsageList[i].appNameDao= getAppNameFromPkgName(context, stats[i].packageName)
-//                arrayUsageList[i].appIconDao = getAppIconFromPkgName(context, stats[i].packageName)
-//                arrayUsageList[i].totalTimeInForegroundDao = convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS)
-//                arrayUsageList[i].currentTimeStampDao = getCurrentDate().toString()
-//                Log.d("Your_App_Name", arrayUsageList[i].appNameDao)
-//                Log.d("Your_App_Icon", arrayUsageList[i].appNameDao)
-//                Log.d("Your_App_Total_Foreground_Time", arrayUsageList[i].appNameDao)
-//                }
-//            else {
-//                Log.d("12:00:00 = ","12:00:00")
-//            }
+            if (stats[i].totalTimeInForeground != 0L) {
+                arrayUsageList.addAll(listOf(AppTraceDataDao(getAppNameFromPkgName(context, stats[i].packageName), getAppIconFromPkgName(context, stats[i].packageName),
+                    convertMilliSecondsToDateFormatUTC(context, stats[i].totalTimeInForeground, Constants.HH_MM_SS),
+                            getCurrentDate().toString())))
+            }
 
             stats_data = stats_data + "Package Name : " + stats[i].packageName +
                     "\n" + "App Name : " + getAppNameFromPkgName(context, stats[i].packageName) +
@@ -108,22 +99,19 @@ object Utilities {
             ) + "\n" + "Last Time Stamp : " + convertMilliSecondsToDateFormatUTC(
                 context, stats[i].lastTimeStamp, Constants.YYYY_MM_DD_HH_MM_SS
             ) + "\n" +
-                    "Total Time in Foreground: " + convertMilliSecondsToDateFormatUTC(
-                context,
-                stats[i].totalTimeInForeground,
-                Constants.HH_MM_SS
-            ) + "\n\n"
+                    "Total Time in Foreground: " + stats[i].totalTimeInForeground + "\n\n"
 
         }
 
+        Log.d(TAG1, stats_data)
+        Log.d("Array_Usage_List", arrayUsageList.toString())
+        Log.d(TAG1, stats.toString())
+        Log.d(TAG1, stats[0].totalTimeInForeground.toString())
+        Log.d(TAG1, stats.size.toString())
 
         tvUsageStats.layoutManager = LinearLayoutManager(context)
-        customAdapter = CustomAdapter(stats, context)
-        tvUsageStats.adapter = customAdapter
-
-        Log.d(TAG1, stats_data)
-        Log.d(TAG1, stats.toString())
-        Log.d(TAG1, stats.size.toString())
+            customAdapter = CustomAdapter(arrayUsageList, context)
+            tvUsageStats.adapter = customAdapter
 
     }
 
@@ -249,10 +237,5 @@ object Utilities {
         if (dialog.isShowing)
             dialog.dismiss()
     }
-
-    fun resetForegroundTime() {
-
-    }
-
 
 }
